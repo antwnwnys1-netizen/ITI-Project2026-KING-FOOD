@@ -23,3 +23,4 @@ SMTP_PASS=your_gmail_app_password
 - Admin dashboard with hamburger menu on phone.
 - MongoDB CRUD for categories/products/orders/users/coupons/notifications/logs/analytics.
 - Import 15 food API categories and products into MongoDB.
+# ITI-Project2026-KING-FOOD
