@@ -76,7 +76,7 @@ async function connectMongo() {
     
     try {
       const result = await Product.updateMany(
-        { stockQuantity: { $exists: false } },
+        { $or: [{ stockQuantity: { $exists: false } }, { stockQuantity: 0, inStock: true }] },
         { $set: { stockQuantity: 50, inStock: true } }
       );
       if (result.modifiedCount > 0) console.log(`🔧 Migrated ${result.modifiedCount} products: set default stockQuantity`);
@@ -541,7 +541,7 @@ app.post('/api/admin/seed-food-data', adminOnly, async (req, res) => {
         name: p.name || p.dsc || en, description: p.dsc || '',
         price: Number(p.price) || 0, originalPrice: Number(p.price) || 0,
         category: category._id, imageUrl: p.img || '',
-        inStock: true, featured: false, onSale: false,
+        stockQuantity: 50, inStock: true, featured: false, onSale: false,
         rating: Number(p.rate) || 0, reviewsCount: 0, reviews: [], sourceApi: apiUrl
       }));
       if (bulk.length) await Product.insertMany(bulk);
@@ -573,7 +573,7 @@ app.post('/api/admin/products', adminOnly, async (req, res) => {
   try { const body = { ...req.body }; if (body.stockQuantity != null) { body.inStock = body.stockQuantity > 0; } const doc = await Product.create(body); await writeLog(`Product created: ${doc.name}`); res.status(201).json(doc); } catch (e) { res.status(500).json({ message: e.message }); }
 });
 app.put('/api/admin/products/:id', adminOnly, async (req, res) => {
-  try { const body = { ...req.body }; if (body.stockQuantity != null) { body.inStock = body.stockQuantity > 0; } const doc = await Product.findByIdAndUpdate(req.params.id, body, { new: true }); await writeLog(`Product updated: ${doc?.name || req.params.id}`); res.json(doc); } catch (e) { res.status(500).json({ message: e.message }); }
+  try { const body = { ...req.body }; if (body.stockQuantity != null) { body.inStock = body.stockQuantity > 0; } const doc = await Product.findByIdAndUpdate(req.params.id, body, { new: true }); await writeLog(`Product updated: ${doc?.name || req.params.id}`); if (doc) io.emit('product:updated', { id: doc._id, stockQuantity: doc.stockQuantity, inStock: doc.inStock }); res.json(doc); } catch (e) { res.status(500).json({ message: e.message }); }
 });
 app.delete('/api/admin/products/:id', adminOnly, async (req, res) => {
   try { await Product.findByIdAndDelete(req.params.id); await writeLog(`Product deleted: ${req.params.id}`); res.json({ ok: true }); } catch (e) { res.status(500).json({ message: e.message }); }
@@ -753,7 +753,7 @@ app.get('/api/store/products/:id', async (req, res) => {
   try {
     const p = await Product.findById(req.params.id).populate('category');
     if (!p) return res.status(404).json({ message: 'Not found' });
-    res.json({ id: p._id, img: p.imageUrl, name: p.name, dsc: p.description, price: p.price, rate: p.rating, country: p.country || 'Unknown', category: p.category });
+    res.json({ id: p._id, img: p.imageUrl, name: p.name, dsc: p.description, price: p.price, rate: p.rating, country: p.country || 'Unknown', category: p.category, stockQuantity: p.stockQuantity ?? 0, inStock: p.inStock });
   } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
@@ -1693,7 +1693,7 @@ connectMongo().then(async () => {
           name: p.name || p.dsc || en, description: p.dsc || '',
           price: Number(p.price) || 0, originalPrice: Number(p.price) || 0,
           category: category._id, imageUrl: p.img || '',
-          inStock: true, featured: false, onSale: false,
+          stockQuantity: 50, inStock: true, featured: false, onSale: false,
           rating: Number(p.rate) || 0, reviewsCount: 0, reviews: [], sourceApi: apiUrl
         }));
         if (bulk.length) await Product.insertMany(bulk);

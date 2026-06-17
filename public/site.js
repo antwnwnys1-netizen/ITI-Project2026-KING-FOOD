@@ -374,7 +374,8 @@ function renderProducts(arr) {
           <span style='font-weight:700;color:var(--accent);'>$${p.price}</span>
           <span style='font-size:12px;color:#f59e0b;'>${'★'.repeat(Math.round(p.rating || 0))}${'☆'.repeat(5 - Math.round(p.rating || 0))}</span>
         </div>
-        <button class='btn btn-sm ${outOfStock ? 'btn-secondary' : 'btn-primary'} add-cart mt-2' data-id='${p._id}' ${outOfStock ? 'disabled' : ''}>${outOfStock ? 'Out of Stock' : t('cart')}</button>
+        <div style='font-size:11px;color:${outOfStock ? '#dc3545' : '#10b981'};margin-top:2px;'>${outOfStock ? 'Out of Stock' : (p.stockQuantity || 0) + ' in stock'}</div>
+        <button class='btn btn-sm ${outOfStock ? 'btn-secondary' : 'btn-primary'} add-cart mt-1' data-id='${p._id}' ${outOfStock ? 'disabled' : ''}>${outOfStock ? 'Out of Stock' : t('cart')}</button>
       </div>
     </div>`;
   }).join('');
@@ -1359,3 +1360,20 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch { }
   })();
 });
+
+
+if (typeof io !== 'undefined') {
+  const socket = io();
+  socket.on('product:updated', (data) => {
+    const idx = state.products.findIndex(p => String(p._id) === String(data.id));
+    if (idx !== -1) {
+      state.products[idx].stockQuantity = data.stockQuantity;
+      state.products[idx].inStock = data.inStock;
+      if (typeof renderProducts === 'function') renderProducts(state.products);
+    }
+    const detailEl = document.getElementById('productDetails');
+    if (detailEl && location.pathname.includes('product.html') && new URLSearchParams(location.search).get('id') === String(data.id)) {
+      initProduct();
+    }
+  });
+}

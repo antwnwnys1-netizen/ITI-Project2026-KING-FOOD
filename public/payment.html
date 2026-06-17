@@ -8,9 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/site.css">
     <style>
-    body {
-        min-height: 100vh;
-    }
+    body { min-height: 100vh; }
 
     .checkout-wrap {
         max-width: 1320px;
@@ -29,7 +27,6 @@
         margin-bottom: 2rem;
     }
 
-    
     .panel-checkout {
         background: var(--panel-bg);
         border: 1px solid var(--border-color);
@@ -46,11 +43,8 @@
         gap: 0.5rem;
     }
 
-    .panel-checkout h5 i {
-        color: var(--accent);
-    }
+    .panel-checkout h5 i { color: var(--accent); }
 
-    
     .checkout-item {
         display: flex;
         align-items: center;
@@ -59,9 +53,7 @@
         border-bottom: 1px solid var(--border-color);
     }
 
-    .checkout-item:last-child {
-        border-bottom: none;
-    }
+    .checkout-item:last-child { border-bottom: none; }
 
     .checkout-item-img {
         width: 52px;
@@ -72,10 +64,7 @@
         background: var(--border-color);
     }
 
-    .checkout-item-body {
-        flex: 1;
-        min-width: 0;
-    }
+    .checkout-item-body { flex: 1; min-width: 0; }
 
     .checkout-item-name {
         font-weight: 600;
@@ -85,10 +74,7 @@
         text-overflow: ellipsis;
     }
 
-    .checkout-item-meta {
-        font-size: 0.8rem;
-        color: var(--muted);
-    }
+    .checkout-item-meta { font-size: 0.8rem; color: var(--muted); }
 
     .checkout-item-total {
         font-weight: 700;
@@ -96,7 +82,6 @@
         white-space: nowrap;
     }
 
-    
     .price-line {
         display: flex;
         justify-content: space-between;
@@ -114,16 +99,13 @@
         color: var(--text-color);
     }
 
-    .price-line.total span:last-child {
-        color: var(--accent);
-    }
+    .price-line.total span:last-child { color: var(--accent); }
 
     .price-line.discount span:last-child {
         color: var(--ok);
         font-weight: 600;
     }
 
-    
     .btn-paymob {
         background: linear-gradient(135deg, var(--accent) 0%, #f7931e 100%);
         border: none;
@@ -135,6 +117,7 @@
         width: 100%;
         transition: all 0.25s;
         box-shadow: 0 6px 24px rgba(255,107,53,0.25);
+        cursor: pointer;
     }
 
     .btn-paymob:hover {
@@ -147,9 +130,9 @@
         opacity: 0.55;
         transform: none;
         box-shadow: none;
+        cursor: not-allowed;
     }
 
-    
     .secure-badge {
         display: flex;
         align-items: center;
@@ -162,7 +145,6 @@
 
     .secure-badge i { font-size: 1rem; }
 
-    
     .iframe-container {
         margin-top: 1.25rem;
         border-radius: 12px;
@@ -204,9 +186,8 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .iframe-hidden { display: none; }
+    .iframe-hidden { display: none !important; }
 
-    
     .pmt-methods {
         display: flex;
         flex-wrap: wrap;
@@ -227,7 +208,39 @@
 
     .pmt-method i { color: var(--accent); }
 
-    
+    /* ── PDF loading overlay ── */
+    #pdfOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1.2rem;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    #pdfOverlay.show { display: flex; }
+
+    #pdfOverlay .pdf-spinner {
+        width: 52px;
+        height: 52px;
+        border: 5px solid rgba(255,255,255,0.25);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.85s linear infinite;
+    }
+
+    #pdfOverlay p {
+        margin: 0;
+        font-size: 0.95rem;
+        opacity: 0.85;
+    }
+
     @media (max-width: 768px) {
         .checkout-wrap { padding: 1rem; }
         .panel-checkout { padding: 1.25rem; }
@@ -236,44 +249,80 @@
 </head>
 <body>
 
+<!-- ── PDF loading overlay ── -->
+<div id="pdfOverlay">
+    <div class="pdf-spinner"></div>
+    <span>جاري تجهيز الفاتورة...</span>
+    <p>سيبدأ التحميل تلقائياً</p>
+</div>
 
 <nav class="navbar navbar-expand nav-theme sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/home.html"><i class="bi bi-shop"></i> King Food</a>
+        <a class="navbar-brand fw-bold" href="/home.html">
+            <i class="bi bi-shop"></i> King Food
+        </a>
         <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="/cart.html"><i class="bi bi-arrow-left"></i> <span data-i18n="pay_back">Back to Cart</span></a>
+            <a class="nav-link" href="/cart.html">
+                <i class="bi bi-arrow-left"></i>
+                <span data-i18n="pay_back">Back to Cart</span>
+            </a>
         </div>
     </div>
 </nav>
 
 <div class="checkout-wrap">
 
-    
-    <div class="checkout-title"><i class="bi bi-credit-card me-2" style="color:var(--accent)"></i><span data-i18n="pay_secure">Secure Checkout</span></div>
-    <div class="checkout-sub" data-i18n="pay_subtitle">Complete your order with Paymob - Egypt's most trusted payment gateway</div>
+    <div class="checkout-title">
+        <i class="bi bi-credit-card me-2" style="color:var(--accent)"></i>
+        <span data-i18n="pay_secure">Secure Checkout</span>
+    </div>
+    <div class="checkout-sub" data-i18n="pay_subtitle">
+        Complete your order with Paymob - Egypt's most trusted payment gateway
+    </div>
 
     <div class="row g-4">
 
-        
+        <!-- Order Summary -->
         <div class="col-lg-7">
             <div class="panel-checkout">
-                <h5><i class="bi bi-receipt"></i> <span data-i18n="pay_summary">Order Summary</span></h5>
+                <h5>
+                    <i class="bi bi-receipt"></i>
+                    <span data-i18n="pay_summary">Order Summary</span>
+                </h5>
                 <div id="orderItems"></div>
 
                 <hr class="my-3" style="border-color:var(--border-color)">
 
-                <div class="price-line"><span data-i18n="pay_subtotal">Subtotal</span><span id="lblSubtotal">$0.00</span></div>
-                <div class="price-line"><span data-i18n="pay_shipping">Shipping</span><span id="lblShipping">$10.00</span></div>
-                <div class="price-line"><span data-i18n="pay_tax">Tax (14%)</span><span id="lblTax">$0.00</span></div>
-                <div class="price-line discount" id="discountRow" style="display:none"><span data-i18n="pay_discount">Discount</span><span id="lblDiscount">-$0.00</span></div>
-                <div class="price-line total"><span data-i18n="pay_total">Total</span><span id="lblTotal">$0.00</span></div>
+                <div class="price-line">
+                    <span data-i18n="pay_subtotal">Subtotal</span>
+                    <span id="lblSubtotal">$0.00</span>
+                </div>
+                <div class="price-line">
+                    <span data-i18n="pay_shipping">Shipping</span>
+                    <span id="lblShipping">$10.00</span>
+                </div>
+                <div class="price-line">
+                    <span data-i18n="pay_tax">Tax (14%)</span>
+                    <span id="lblTax">$0.00</span>
+                </div>
+                <div class="price-line discount" id="discountRow" style="display:none">
+                    <span data-i18n="pay_discount">Discount</span>
+                    <span id="lblDiscount">-$0.00</span>
+                </div>
+                <div class="price-line total">
+                    <span data-i18n="pay_total">Total</span>
+                    <span id="lblTotal">$0.00</span>
+                </div>
             </div>
         </div>
 
-        
+        <!-- Payment Panel -->
         <div class="col-lg-5">
             <div class="panel-checkout">
-                <h5><i class="bi bi-wallet2"></i> <span data-i18n="pay_method">Payment Method</span></h5>
+                <h5>
+                    <i class="bi bi-wallet2"></i>
+                    <span data-i18n="pay_method">Payment Method</span>
+                </h5>
 
                 <div class="pmt-methods">
                     <span class="pmt-method"><i class="bi bi-credit-card"></i> Visa</span>
@@ -282,14 +331,16 @@
                 </div>
 
                 <button id="payBtn" class="btn-paymob" onclick="initiatePayment()">
-                    <i class="bi bi-lock-fill me-2"></i><span data-i18n="pay_now">Pay Securely with Paymob</span>
+                    <i class="bi bi-lock-fill me-2"></i>
+                    <span data-i18n="pay_now">Pay Securely with Paymob</span>
                 </button>
 
-                
                 <div id="iframeArea" class="iframe-container iframe-hidden">
                     <div class="iframe-loading" id="iframeLoading">
                         <div class="spinner"></div>
-                        <small style="color:var(--muted)" data-i18n="pay_processing">Connecting to Paymob...</small>
+                        <small style="color:var(--muted)" data-i18n="pay_processing">
+                            Connecting to Paymob...
+                        </small>
                     </div>
                     <iframe id="paymobIframe" allow="payment" allowfullscreen></iframe>
                 </div>
@@ -301,42 +352,73 @@
 
                 <div class="mt-3" style="font-size:0.8rem;color:var(--muted);text-align:center">
                     <i class="bi bi-info-circle me-1"></i>
-                    <span data-i18n="pay_safe">Your payment is processed securely through Paymob. We never store your card details.</span>
+                    <span data-i18n="pay_safe">
+                        Your payment is processed securely through Paymob.
+                        We never store your card details.
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<!-- ══════════════════════════════════════════════════
+     المكتبات من node_modules (local) — مش CDN
+     بعد ما تعمل: npm install jspdf jspdf-autotable canvas-confetti
+     وتضيف في server.js:
+     app.use('/libs', express.static(path.join(__dirname, 'node_modules')));
+     ══════════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="/libs/jspdf/dist/jspdf.umd.min.js"></script>
+<script src="/libs/jspdf-autotable/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="/libs/canvas-confetti/dist/confetti.browser.min.js"></script>
 <script src="/site.js"></script>
 <script src="/i18n.js"></script>
+
 <script>
-let cartData = null;
+'use strict';
+
+// ════════════════════════════════════════════════
+//  State
+// ════════════════════════════════════════════════
+let cartData           = null;
 let currentTransaction = null;
-let pollingTimer = null;
+let pollingTimer       = null;
+let invoiceSnapshot    = null;
 
+// ════════════════════════════════════════════════
+//  i18n helper
+// ════════════════════════════════════════════════
+function __(key) {
+    return window.i18n?.t?.(key) || (typeof t === 'function' ? t(key) : key);
+}
 
-function __(key) { return window.i18n?.t(key) || (typeof t === 'function' ? t(key) : key); }
-
-
+// ════════════════════════════════════════════════
+//  تحميل الكارت
+// ════════════════════════════════════════════════
 async function loadCart() {
     try {
         const r = await fetch('/api/user/cart');
-        if (!r.ok) { if (r.status===401) { window.location.href='/login.html'; return; } throw new Error(); }
+        if (!r.ok) {
+            if (r.status === 401) { window.location.href = '/login.html'; return; }
+            throw new Error('Failed to load cart');
+        }
         cartData = await r.json();
-        if (!cartData.items || !cartData.items.length) { window.location.href='/cart.html'; return; }
+        if (!cartData?.items?.length) {
+            window.location.href = '/cart.html';
+            return;
+        }
         renderOrder();
-    } catch(e) {
+    } catch (e) {
+        console.error('[Cart]', e);
         showToast('Failed to load cart', false);
-        window.location.href='/cart.html';
+        window.location.href = '/cart.html';
     }
 }
 
-
+// ════════════════════════════════════════════════
+//  رسم ملخص الطلب
+// ════════════════════════════════════════════════
 function renderOrder() {
     const container = document.getElementById('orderItems');
     container.innerHTML = '';
@@ -350,7 +432,11 @@ function renderOrder() {
         const el = document.createElement('div');
         el.className = 'checkout-item';
         el.innerHTML = `
-            <img class="checkout-item-img" src="${item.product.imageUrl || 'https://placehold.co/52x52/1e293b/94a3b8?text=?'}" alt="${item.product.name}" loading="lazy" onerror="this.src='https://placehold.co/52x52/1e293b/94a3b8?text=?'">
+            <img class="checkout-item-img"
+                 src="${item.product.imageUrl || 'https://placehold.co/52x52/1e293b/94a3b8?text=?'}"
+                 alt="${item.product.name}"
+                 loading="lazy"
+                 onerror="this.src='https://placehold.co/52x52/1e293b/94a3b8?text=?'">
             <div class="checkout-item-body">
                 <div class="checkout-item-name">${item.product.name}</div>
                 <div class="checkout-item-meta">$${item.product.price.toFixed(2)} × ${item.qty}</div>
@@ -362,33 +448,45 @@ function renderOrder() {
 
     const shipping = 10;
     const discount = cartData.discountAmount || 0;
-    const tax = (subtotal - discount) * 0.14;
-    const total = subtotal + shipping + tax - discount;
+    const tax      = (subtotal - discount) * 0.14;
+    const total    = subtotal + shipping + tax - discount;
 
     document.getElementById('lblSubtotal').textContent = `$${subtotal.toFixed(2)}`;
     document.getElementById('lblShipping').textContent = `$${shipping.toFixed(2)}`;
-    document.getElementById('lblTax').textContent = `$${tax.toFixed(2)}`;
-    document.getElementById('lblTotal').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('lblTax').textContent      = `$${tax.toFixed(2)}`;
+    document.getElementById('lblTotal').textContent    = `$${total.toFixed(2)}`;
 
     if (discount > 0) {
         document.getElementById('discountRow').style.display = 'flex';
-        document.getElementById('lblDiscount').textContent = `-$${discount.toFixed(2)}`;
+        document.getElementById('lblDiscount').textContent   = `-$${discount.toFixed(2)}`;
     }
 
     window.orderTotals = { subtotal, shipping, tax, discount, total };
 }
 
-
+// ════════════════════════════════════════════════
+//  بدء الدفع
+// ════════════════════════════════════════════════
 async function initiatePayment() {
+    // تحقق من jsPDF قبل ما نبدأ
+    if (!window.jspdf?.jsPDF) {
+        showToast('PDF library not loaded. Please refresh the page.', false);
+        console.error('[Init] jsPDF missing — check /libs/jspdf/dist/jspdf.umd.min.js');
+        return;
+    }
+
     const btn = document.getElementById('payBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> ' + __('pay_processing');
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${__('pay_processing') || 'Processing...'}`;
 
     try {
         const r = await fetch('/api/payment/paymob/initiate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ shippingAddress: 'Cairo, Egypt', phone: '+201016447253' })
+            body: JSON.stringify({
+                shippingAddress: 'Cairo, Egypt',
+                phone: '+201016447253'
+            })
         });
 
         const data = await r.json();
@@ -396,52 +494,53 @@ async function initiatePayment() {
 
         currentTransaction = data;
 
-        const area = document.getElementById('iframeArea');
-        const loading = document.getElementById('iframeLoading');
-        const iframe = document.getElementById('paymobIframe');
+        // ── احفظ snapshot فوراً بعد الـ initiation ──
+        if (cartData) {
+            invoiceSnapshot = {
+                items:        JSON.parse(JSON.stringify(cartData.items || [])),
+                discountCode: cartData.discountCode || null,
+                orderNo:      data.orderNo || data.orderId || data.transactionId || 'N/A',
+                ...(window.orderTotals || {})
+            };
+            console.log('[Invoice] Snapshot saved ✓ — order:', invoiceSnapshot.orderNo);
+        }
 
-        area.classList.remove('iframe-hidden');
-        loading.style.display = 'flex';
+        document.getElementById('iframeArea').classList.remove('iframe-hidden');
+        document.getElementById('iframeLoading').style.display = 'flex';
         btn.style.display = 'none';
 
         window.addEventListener('message', onPaymentMessage);
-        
-        
-        iframe.src = data.iframeUrl;
-        
-        
+        document.getElementById('paymobIframe').src = data.iframeUrl;
         startPolling();
 
     } catch (e) {
-        showToast(e.message || __('pay_fail_msg'), false);
+        console.error('[Payment] Initiation error:', e);
+        showToast(e.message || __('pay_fail_msg') || 'Payment failed', false);
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-lock-fill me-2"></i>' + __('pay_now');
+        btn.innerHTML = `<i class="bi bi-lock-fill me-2"></i>${__('pay_now') || 'Pay Securely with Paymob'}`;
     }
 }
 
-
-document.getElementById('paymobIframe').onload = function() {
+// ─── iframe onload ───────────────────────────────
+document.getElementById('paymobIframe').addEventListener('load', () => {
     document.getElementById('iframeLoading').style.display = 'none';
-};
+});
 
-
+// ─── postMessage من Paymob ───────────────────────
 function onPaymentMessage(event) {
-    if (event.data && event.data.type === 'paymob_result') {
+    if (event.data?.type === 'paymob_result') {
         window.removeEventListener('message', onPaymentMessage);
-        if (event.data.success) handleSuccess();
-        else handleFailure();
+        event.data.success ? handleSuccess() : handleFailure();
     }
 }
 
-
+// ─── Polling ────────────────────────────────────
 function startPolling() {
     if (!currentTransaction) return;
     let attempts = 0;
-    const maxAttempts = 60;
 
     function poll() {
-        if (attempts >= maxAttempts) { pollingTimer = null; return; }
-        attempts++;
+        if (attempts++ >= 60) { pollingTimer = null; return; }
 
         fetch(`/api/payment/transaction/${currentTransaction.transactionId}`)
             .then(r => r.json())
@@ -462,192 +561,290 @@ function startPolling() {
     pollingTimer = setTimeout(poll, 8000);
 }
 
+// ════════════════════════════════════════════════
+//  handleSuccess
+// ════════════════════════════════════════════════
+async function handleSuccess() {
+    if (pollingTimer) { clearTimeout(pollingTimer); pollingTimer = null; }
+    window.removeEventListener('message', onPaymentMessage);
 
+    // حدّث الـ orderNo لو الـ API رجّع رقم أدق
+    if (invoiceSnapshot && currentTransaction) {
+        invoiceSnapshot.orderNo =
+            currentTransaction.orderNo  ||
+            currentTransaction.orderId  ||
+            currentTransaction.transactionId ||
+            invoiceSnapshot.orderNo;
+    }
+
+    // toast + confetti
+    showToast(__('pay_success_msg') || 'Payment successful! 🎉', true);
+    fireConfetti();
+
+    // امسح الكارت في الخلفية
+    clearCartFromServer();
+
+    // أظهر overlay الـ PDF
+    showPdfOverlay(true);
+
+    // ولّد الـ PDF
+    const ok = await generateInvoiceAsync();
+
+    showPdfOverlay(false);
+
+    if (!ok) showToast('Could not generate PDF invoice', false);
+
+    // redirect بعد ثانيتين
+    setTimeout(() => { window.location.href = '/home.html'; }, 2000);
+}
+
+// ════════════════════════════════════════════════
+//  handleFailure
+// ════════════════════════════════════════════════
+function handleFailure() {
+    if (pollingTimer) { clearTimeout(pollingTimer); pollingTimer = null; }
+    window.removeEventListener('message', onPaymentMessage);
+    showToast(__('pay_fail_msg') || 'Payment failed. Please try again.', false);
+    setTimeout(() => { window.location.href = '/cart.html'; }, 1500);
+}
+
+// ════════════════════════════════════════════════
+//  مسح الكارت
+// ════════════════════════════════════════════════
+async function clearCartFromServer() {
+    try {
+        await fetch('/api/user/cart/clear', { method: 'POST' });
+    } catch (e) {
+        console.error('[Cart] clear error:', e);
+    } finally {
+        localStorage.removeItem('cart');
+        sessionStorage.removeItem('cart');
+        window.dispatchEvent(new Event('cartCleared'));
+    }
+}
+
+// ════════════════════════════════════════════════
+//  Confetti
+// ════════════════════════════════════════════════
+function fireConfetti() {
+    if (typeof confetti !== 'function') return;
+    confetti({ particleCount: 180, spread: 80, origin: { y: 0.5 } });
+    setTimeout(() => confetti({ particleCount: 100, spread: 60, origin: { y: 0.4 } }), 400);
+}
+
+// ════════════════════════════════════════════════
+//  PDF Overlay
+// ════════════════════════════════════════════════
+function showPdfOverlay(show) {
+    document.getElementById('pdfOverlay')?.classList.toggle('show', show);
+}
+
+// ════════════════════════════════════════════════
+//  generateInvoiceAsync — wrapper
+// ════════════════════════════════════════════════
+function generateInvoiceAsync() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            try { resolve(generateInvoice()); }
+            catch (e) { console.error('[Invoice] crash:', e); resolve(false); }
+        }, 150);
+    });
+}
+
+// ════════════════════════════════════════════════
+//  generateInvoice — PDF الفعلي
+// ════════════════════════════════════════════════
 function generateInvoice() {
+
+    // ── guards ──────────────────────────────────
+    if (!window.jspdf?.jsPDF) {
+        console.error('[Invoice] jsPDF not available');
+        return false;
+    }
+    if (!invoiceSnapshot?.items?.length) {
+        console.error('[Invoice] No snapshot or empty items');
+        return false;
+    }
+
+    console.log('[Invoice] Generating PDF for order:', invoiceSnapshot.orderNo);
+
     try {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const doc   = new jsPDF({ unit: 'mm', format: 'a4' });
         const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
 
-        
+        // ── Header ──────────────────────────────
         doc.setFillColor(255, 107, 53);
-        doc.rect(0, 0, pageW, 35, 'F');
+        doc.rect(0, 0, pageW, 38, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22);
+        doc.setFontSize(24);
         doc.setFont('helvetica', 'bold');
-        doc.text('KING FOOD', pageW / 2, 18, { align: 'center' });
+        doc.text('KING FOOD', pageW / 2, 20, { align: 'center' });
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text('Invoice / Receipt', pageW / 2, 28, { align: 'center' });
+        doc.text('Invoice / Receipt', pageW / 2, 30, { align: 'center' });
 
-        
+        // ── Order info ───────────────────────────
+        const orderNo = String(invoiceSnapshot.orderNo || 'N/A');
+        const now     = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+        const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+
+        let y = 52;
         doc.setTextColor(60, 60, 60);
-        doc.setFontSize(10);
-        const orderNo = currentTransaction?.orderNo || 'N/A';
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
         doc.setFont('helvetica', 'bold');
-        doc.text('Order Number:', 14, 48);
-        doc.text('Date:', 14, 56);
-        doc.text('Time:', 14, 64);
+        doc.setFontSize(10);
+        doc.text('Order Number:', 14, y);
+        doc.text('Date:',         14, y + 8);
+        doc.text('Time:',         14, y + 16);
         doc.setFont('helvetica', 'normal');
-        doc.text(`#${orderNo}`, 50, 48);
-        doc.text(dateStr, 50, 56);
-        doc.text(timeStr, 50, 64);
+        doc.text(`#${orderNo}`, 55, y);
+        doc.text(dateStr,       55, y + 8);
+        doc.text(timeStr,       55, y + 16);
 
-        
-        let y = 78;
+        y += 26;
+        doc.setDrawColor(220, 220, 220);
+        doc.line(14, y, pageW - 14, y);
+
+        // ── Table header ─────────────────────────
+        y += 8;
         doc.setFillColor(245, 245, 245);
-        doc.rect(14, y - 4, pageW - 28, 8, 'F');
+        doc.rect(14, y - 5, pageW - 28, 10, 'F');
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
         doc.setTextColor(80, 80, 80);
-        doc.text('Item', 18, y);
-        doc.text('Qty', 120, y);
-        doc.text('Price', 150, y);
-        doc.text('Total', 178, y);
+        doc.text('Item',  18,  y);
+        doc.text('Qty',  118,  y);
+        doc.text('Price',142,  y);
+        doc.text('Total',168,  y);
+        y += 8;
 
-        y += 10;
+        // ── Table rows ───────────────────────────
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(40, 40, 40);
         doc.setFontSize(9);
 
         let subtotal = 0;
-        const items = cartData?.items || [];
-        items.forEach((item, i) => {
+
+        invoiceSnapshot.items.forEach((item, idx) => {
             if (!item.product) return;
             const lineTotal = item.qty * item.product.price;
             subtotal += lineTotal;
-            const name = item.product.name || 'Product';
-            const price = item.product.price.toFixed(2);
-            const tot = lineTotal.toFixed(2);
-            doc.text(name, 18, y);
-            doc.text(String(item.qty), 120, y);
-            doc.text(`$${price}`, 150, y);
-            doc.text(`$${tot}`, 178, y);
-            y += 7;
-            if (y > 260) { doc.addPage(); y = 20; }
+
+            // zebra stripes
+            if (idx % 2 === 0) {
+                doc.setFillColor(250, 250, 250);
+                doc.rect(14, y - 4, pageW - 28, 8, 'F');
+            }
+
+            // safe ASCII name
+            const safeName = String(item.product.name || 'Product').replace(/[^\x00-\x7F]/g, '?');
+            let displayName = safeName;
+            if (doc.getTextWidth(safeName) > 92) {
+                displayName = doc.splitTextToSize(safeName, 92)[0] + '...';
+            }
+
+            doc.text(displayName,                            18,  y);
+            doc.text(String(item.qty),                      118, y);
+            doc.text(`$${item.product.price.toFixed(2)}`,   142, y);
+            doc.text(`$${lineTotal.toFixed(2)}`,            168, y);
+            y += 8;
+
+            if (y > pageH - 55) { doc.addPage(); y = 20; }
         });
 
-        
+        // ── Totals ───────────────────────────────
         y += 4;
-        const shipping = 10;
-        const discount = cartData?.discountAmount || 0;
-        const tax = (subtotal - discount) * 0.14;
-        const total = subtotal + shipping + tax - discount;
-
         doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.3);
         doc.line(14, y, pageW - 14, y);
-        y += 6;
+        y += 8;
 
-        const rightX = 178;
-        const drawLine = (label, value, bold) => {
+        const shipping = invoiceSnapshot.shipping ?? 10;
+        const discount = invoiceSnapshot.discount ?? 0;
+        const tax      = invoiceSnapshot.tax      ?? 0;
+        const total    = invoiceSnapshot.total    ?? (subtotal + shipping + tax - discount);
+        const lx = 118, vx = pageW - 14;
+
+        function summaryRow(label, value, bold = false, rgb = null) {
             doc.setFont('helvetica', bold ? 'bold' : 'normal');
             doc.setFontSize(bold ? 11 : 9);
-            doc.text(label, 120, y);
-            doc.text(value, rightX, y, { align: 'right' });
-            y += 6;
-        };
-        drawLine('Subtotal:', `$${subtotal.toFixed(2)}`);
-        drawLine('Shipping:', `$${shipping.toFixed(2)}`);
-        if (discount > 0) drawLine('Discount:', `-$${discount.toFixed(2)}`);
-        drawLine('Tax (14%):', `$${tax.toFixed(2)}`);
-        doc.setDrawColor(255, 107, 53);
-        doc.line(14, y - 2, pageW - 14, y - 2);
-        drawLine('Total Paid:', `$${total.toFixed(2)}`, true);
+            doc.setTextColor(...(rgb || [60, 60, 60]));
+            doc.text(label, lx, y);
+            doc.text(value, vx, y, { align: 'right' });
+            y += 7;
+        }
 
-        
+        summaryRow('Subtotal:',  `$${subtotal.toFixed(2)}`);
+        summaryRow('Shipping:',  `$${shipping.toFixed(2)}`);
+        if (discount > 0) summaryRow('Discount:', `-$${discount.toFixed(2)}`, false, [22, 163, 74]);
+        summaryRow('Tax (14%):', `$${tax.toFixed(2)}`);
+
+        y += 2;
+        doc.setDrawColor(255, 107, 53);
+        doc.setLineWidth(0.8);
+        doc.line(lx, y, pageW - 14, y);
+        doc.setLineWidth(0.3);
+        y += 6;
+
+        summaryRow('Total Paid:', `$${total.toFixed(2)}`, true, [255, 107, 53]);
+
+        // ── Extra info ───────────────────────────
         y += 6;
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
+        doc.setTextColor(110, 110, 110);
         doc.text('Payment Method: Paymob (Visa / Mastercard / Meeza)', 14, y);
-        y += 6;
 
-        if (cartData?.discountCode) {
-            doc.text(`Coupon Applied: ${cartData.discountCode}`, 14, y);
+        if (invoiceSnapshot.discountCode) {
             y += 6;
+            doc.text(`Coupon Applied: ${invoiceSnapshot.discountCode}`, 14, y);
         }
 
-        
-        y = Math.max(y, 240);
+        // ── Footer ──────────────────────────────
         doc.setFillColor(255, 107, 53);
-        doc.rect(0, 282, pageW, 15, 'F');
+        doc.rect(0, pageH - 16, pageW, 16, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
-        doc.text('Thank you for choosing King Food! We hope you enjoy your meal.', pageW / 2, 292, { align: 'center' });
+        doc.text(
+            'Thank you for choosing King Food! We hope you enjoy your meal.',
+            pageW / 2, pageH - 6, { align: 'center' }
+        );
 
-        doc.save(`invoice-${orderNo}.pdf`);
-    } catch (e) {
-        console.error('Invoice generation failed:', e);
+        // ── Download via Blob ────────────────────
+        const safeNo   = orderNo.replace(/[^a-zA-Z0-9\-_]/g, '_');
+        const filename = `king-food-invoice-${safeNo}.pdf`;
+        const blob     = doc.output('blob');
+        const url      = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href         = url;
+        a.download     = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+        console.log('[Invoice] PDF downloaded ✓', filename);
+        return true;
+
+    } catch (err) {
+        console.error('[Invoice] Generation failed:', err);
+        return false;
     }
 }
 
-function handleSuccess() {
-    if (pollingTimer) { clearTimeout(pollingTimer); pollingTimer = null; }
-    window.removeEventListener('message', onPaymentMessage);
-
-    
-    generateInvoice();
-
-    showToast(__('pay_success_msg'), true);
-
-    if (window.confetti) {
-        confetti({ particleCount: 180, spread: 80, origin: { y: 0.5 } });
-        setTimeout(() => confetti({ particleCount: 100, spread: 60, origin: { y: 0.4 } }), 400);
-    }
-
-    
-    clearCartFromServer();
-
-    
-    setTimeout(() => {
-        window.location.href = '/home.html';
-    }, 3000);
-}
-
-
-function handleFailure() {
-    if (pollingTimer) { clearTimeout(pollingTimer); pollingTimer = null; }
-    window.removeEventListener('message', onPaymentMessage);
-
-    showToast(__('pay_fail_msg'), false);
-
-    
-    
-    setTimeout(() => {
-        window.location.href = '/cart.html';
-    }, 1500);
-}
-
-
-async function clearCartFromServer() {
-    try {
-        
-        await fetch('/api/user/cart/clear', { method: 'POST' });
-        
-        
-        localStorage.removeItem('cart');
-        sessionStorage.removeItem('cart');
-        
-        
-        window.dispatchEvent(new Event('cartCleared'));
-        
-        console.log('[Payment] Cart cleared successfully');
-    } catch (e) {
-        console.error('[Payment] Failed to clear cart:', e);
-        
-        localStorage.removeItem('cart');
-        sessionStorage.removeItem('cart');
-        window.dispatchEvent(new Event('cartCleared'));
-    }
-}
-
-
-document.addEventListener('DOMContentLoaded', loadCart);
+// ════════════════════════════════════════════════
+//  Init
+// ════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    // تحقق سريع من المكتبات
+    console.log('[Init] jsPDF    :', window.jspdf?.jsPDF ? '✓ loaded' : '✗ MISSING');
+    console.log('[Init] confetti :', typeof confetti === 'function' ? '✓ loaded' : '✗ MISSING');
+    loadCart();
+});
 </script>
 </body>
 </html>

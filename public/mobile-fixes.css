@@ -50,26 +50,96 @@
 }
 
 /* ============================================
+   إصلاح زر الهامبرغر - الضمان ظهوره في كل الهواتف
+   ============================================ */
+
+/* تأكيد ظهور الهامبرغر على جميع الهواتف (حتى 768px) */
+@media (max-width: 768px) {
+  /* تأكيد أن navbar-toggler يظهر */
+  .navbar-toggler {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 10001 !important;
+    position: relative !important;
+  }
+
+  /* إجبار navbar-expand-lg على إظهار الهامبرغر */
+  .navbar-expand-lg .navbar-toggler {
+    display: inline-flex !important;
+  }
+}
+
+/* ============================================
    LIGHT MODE (الوضع العادي)
    الخلفية بيضاء - الكتابة سوداء - الأيقونة سوداء
    ============================================ */
 
 @media (max-width: 768px) {
-  /* زر الهامبرغر - خلفية بيضاء وأيقونة سوداء */
+  /* زر الهامبرغر - أحجام متجاوبة */
   .navbar-toggler {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(0,0,0,0.2) !important;
-    padding: 8px 12px !important;
     border-radius: 8px !important;
     background-color: #ffffff !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* حجم الهامبرغر للهواتف الصغيرة جداً (320px - 374px) */
+  @media (max-width: 374px) {
+    .navbar-toggler {
+      padding: 5px 8px !important;
+      border-radius: 6px !important;
+    }
+    .navbar-toggler-icon {
+      width: 22px !important;
+      height: 22px !important;
+    }
+  }
+
+  /* حجم الهامبرغر للهواتف الصغيرة (375px - 480px) */
+  @media (min-width: 375px) and (max-width: 480px) {
+    .navbar-toggler {
+      padding: 7px 11px !important;
+      border-radius: 7px !important;
+    }
+    .navbar-toggler-icon {
+      width: 26px !important;
+      height: 26px !important;
+    }
+  }
+
+  /* حجم الهامبرغر للهواتف المتوسطة والكبيرة (481px - 768px) */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .navbar-toggler {
+      padding: 9px 14px !important;
+      border-radius: 10px !important;
+      border-width: 2px !important;
+    }
+    .navbar-toggler-icon {
+      width: 30px !important;
+      height: 30px !important;
+    }
   }
 
   /* أيقونة الهامبرغر - سوداء */
   .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23000000' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
     filter: none !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+  }
+
+  /* تأثير الضغط على الهامبرغر */
+  .navbar-toggler:active {
+    transform: scale(0.95) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
   }
 
   /* القائمة المنبثقة - خلفية بيضاء، نصوص سوداء */
@@ -210,6 +280,11 @@
   body.dark-mode .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23ffffff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
     filter: none !important;
+  }
+
+  /* تأثير الضغط في الوضع المظلم */
+  body.dark-mode .navbar-toggler:active {
+    box-shadow: 0 1px 3px rgba(255,255,255,0.2) !important;
   }
 
   /* القائمة المنبثقة في الوضع المظلم - خلفية سوداء */

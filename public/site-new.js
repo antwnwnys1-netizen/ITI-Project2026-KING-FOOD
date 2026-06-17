@@ -124,7 +124,8 @@ function renderProducts(arr) {
   productsEl.innerHTML = arr.map(p => {
     const n = new Date(p.createdAt) > new Date(Date.now() - 7 * 86400000);
     const disc = p.originalPrice > p.price ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
-    return `<div class='col-6 col-md-4 col-lg-3'><div class='card p-2'><div class='position-relative'><img class='product-img product-link' data-id='${p._id}' src='${imageFor(p)}'><button class='btn btn-sm position-absolute top-0 end-0 m-1 wishbtn' data-id='${p._id}' style='background:none;border:none;font-size:1.3rem;'><i class='bi bi-heart' style='color:white;'></i></button>${n ? "<span class='badge bg-primary position-absolute top-0 start-0 m-1'>New</span>" : ''}${disc ? `<span class='badge bg-danger position-absolute top-0 start-50 translate-middle-x m-1'>-${disc}%</span>` : ''}</div><h6 class='mt-2'>${p.name}</h6><div>$${p.price}</div><button class='btn btn-sm btn-primary add-cart mt-2' data-id='${p._id}'>${t('cart')}</button></div></div>`;
+    const outOfStock = (p.stockQuantity == null || p.stockQuantity <= 0);
+    return `<div class='col-6 col-md-4 col-lg-3'><div class='card p-2'><div class='position-relative'><img class='product-img product-link' data-id='${p._id}' src='${imageFor(p)}'><button class='btn btn-sm position-absolute top-0 end-0 m-1 wishbtn' data-id='${p._id}' style='background:none;border:none;font-size:1.3rem;'><i class='bi bi-heart' style='color:white;'></i></button>${n ? "<span class='badge bg-primary position-absolute top-0 start-0 m-1'>New</span>" : ''}${disc ? `<span class='badge bg-danger position-absolute top-0 start-50 translate-middle-x m-1'>-${disc}%</span>` : ''}${outOfStock ? "<span class='badge bg-secondary position-absolute bottom-0 start-0 m-1'>Out of Stock</span>" : ''}</div><h6 class='mt-2'>${p.name}</h6><div>$${p.price}</div><div style='font-size:11px;color:${outOfStock ? '#dc3545' : '#10b981'};margin-top:2px;'>${outOfStock ? 'Out of Stock' : (p.stockQuantity || 0) + ' in stock'}</div><button class='btn btn-sm ${outOfStock ? 'btn-secondary' : 'btn-primary'} add-cart mt-1' data-id='${p._id}' ${outOfStock ? 'disabled' : ''}>${outOfStock ? 'Out of Stock' : t('cart')}</button></div></div>`;
   }).join('');
   document.querySelectorAll('.add-cart').forEach(b => b.onclick = () => addToCart(b.dataset.id));
   document.querySelectorAll('.wishbtn').forEach(b => b.onclick = (e) => { e.stopPropagation(); toggleWishlist(b.dataset.id, b.querySelector('i')); });
@@ -223,18 +224,21 @@ async function initProduct() {
   if (!document.getElementById('productDetails')) return;
   const id = new URLSearchParams(location.search).get('id');
   const p = await api('/api/store/products/' + id);
+  const outOfStock = (p.stockQuantity == null || p.stockQuantity <= 0);
   const productDetails = document.getElementById('productDetails');
   productDetails.innerHTML = `
     <img class='product-img mb-3' src='${imageFor(p)}'>
-    <h2>${p.name}</h2>
+    <h2>${p.name} ${outOfStock ? '<span class="badge bg-secondary ms-2">Out of Stock</span>' : ''}</h2>
     <p>${p.dsc || ''}</p>
     <ul>
       <li>Price: $${p.price}</li>
       <li>Rate: ${p.rate || 'N/A'}</li>
+      <li>Stock: ${outOfStock ? 'Out of Stock' : (p.stockQuantity || 0) + ' available'}</li>
     </ul>
-    <button class='btn btn-primary' id='addP'>${t('cart')}</button>
+    <button class='btn ${outOfStock ? 'btn-secondary' : 'btn-primary'}' id='addP' ${outOfStock ? 'disabled' : ''}>${outOfStock ? 'Out of Stock' : t('cart')}</button>
   `;
-  document.getElementById('addP').onclick = () => addToCart(p._id);
+  const btn = document.getElementById('addP');
+  if (btn && !outOfStock) btn.onclick = () => addToCart(p._id);
 }
 
 async function initProfile() {
@@ -385,3 +389,19 @@ initNotifications();
 initAddresses();
 initSubscribe();
 refreshBadges();
+
+if (typeof io !== 'undefined') {
+  const socket = io();
+  socket.on('product:updated', (data) => {
+    const idx = state.products.findIndex(p => String(p._id) === String(data.id));
+    if (idx !== -1) {
+      state.products[idx].stockQuantity = data.stockQuantity;
+      state.products[idx].inStock = data.inStock;
+      if (typeof renderProducts === 'function') renderProducts(state.products);
+    }
+    const detailEl = document.getElementById('productDetails');
+    if (detailEl && location.pathname.includes('product.html') && new URLSearchParams(location.search).get('id') === String(data.id)) {
+      initProduct();
+    }
+  });
+}
