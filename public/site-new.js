@@ -238,7 +238,7 @@ async function initProduct() {
     <button class='btn ${outOfStock ? 'btn-secondary' : 'btn-primary'}' id='addP' ${outOfStock ? 'disabled' : ''}>${outOfStock ? 'Out of Stock' : t('cart')}</button>
   `;
   const btn = document.getElementById('addP');
-  if (btn && !outOfStock) btn.onclick = () => addToCart(p._id);
+  if (btn && !outOfStock) btn.onclick = () => addToCart(p.id || p._id);
 }
 
 async function initProfile() {
