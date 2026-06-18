@@ -1,4 +1,4 @@
-const CACHE_NAME = 'restaurant-admin-v1';
+const CACHE_NAME = 'kingfood-v2';
 const ASSETS = [
   '/admin.html',
   '/admin.css',
@@ -18,5 +18,15 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request)));
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      const fetched = fetch(event.request).then((response) => {
+        if (response.ok && event.request.url.startsWith(self.location.origin)) {
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+        }
+        return response;
+      });
+      return cached || fetched;
+    })
+  );
 });

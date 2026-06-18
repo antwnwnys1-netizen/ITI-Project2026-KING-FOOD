@@ -347,6 +347,8 @@ app.use(
   })
 );
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/libs', express.static(path.join(__dirname, 'node_modules')));
+
 
 const passwordRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
